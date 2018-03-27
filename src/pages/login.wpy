@@ -1,0 +1,177 @@
+<template>
+  <view id="bind">
+    <view id="nav">
+      <image mode="aspectFit" src="../styles/icon/logo-mobile.png" />
+      <text class="logoText">登录</text>
+    </view>
+    <view id="title">
+      <view>
+        <text>bilibili</text>
+      </view>
+    </view>
+    <form @submit="bind">
+      <view class="input-group" hover-class="active">
+        <text class="input-label iconfont ">&#xe61b; 账号</text>
+        <input name="user_name" type="text" placeholder="请输入您的邮箱/手机" />
+      </view>
+      <view class="input-group" hover-class="active">
+        <text class="input-label iconfont ">&#xe623; 密码</text>
+        <input name="user_password" type="password" placeholder="请输入您的密码" />
+      </view>
+      <view class="help">
+        <view>密码统一为 123456</view>
+        <view>注册尚未开放，请向管理员申请账号</view>
+      </view>
+      <button formType="submit">立即登录</button>
+    </form>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import HttpMixin from '../mixins/http';
+  import ToastMixin from "../mixins/toast";
+  import db from "../util/db";
+  export default class BindJwc extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    };
+    mixins = [ToastMixin,HttpMixin]
+    components = {}
+    methods = {
+      bind(e) {
+        let params = e.detail.value;
+        params['type'] = 1;
+        if (params.user_name == '' || params.user_password == '') {
+          this.ShowToast('账号与密码必填！');
+          return
+        }
+        console.log(params);
+        this.Bind(params)
+      }
+    };
+    async Bind(params) {
+      try {
+        // const res = await this.POST('demo/app/wepy/_admin_user.php', params)
+        const res = await this.POST('user/login', params)
+        db.Set('verify', 1)
+        this.ShowToast('登录成功！', 'success')
+        wepy.navigateBack({
+          delta: 1
+        })
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+  @import url("../styles/less/config");
+
+    @logo_width:63rpx * 1.5;
+    @logo_height:28.8rpx * 1.5;
+    @logo_margin_top : 100rpx;
+    @logo_margin_bottom : 15rpx;
+
+  page {
+    height: 100%;
+  }
+  .help {
+    font-size: 0.7rem;
+    color: #888;
+    padding: 0 3%;
+    text-align:center;
+  }
+  .input-group {
+    &:hover {
+      transition: all 1s;
+      border: 2px solid @base-color;
+    }
+    display: flex;
+    align-items: center;
+    padding: 25rpx 10rpx;
+    margin: 40rpx 3%;
+    background: #fff;
+    border-radius: 5px;
+    border: 2px solid #f4f4f4;
+    .input-label {
+      color: #888;
+      font-size: 13pt;
+      height: 25rpx;
+      line-height: 25rpx;
+      padding: 0 25rpx;
+      border-right: 1px solid #d8d8d8;
+    }
+    input {
+      flex: 1;
+      font-size: 13pt;
+      min-height: 52rpx;
+      height: 52rpx;
+      line-height: 52rpx;
+      padding: 0 25rpx;
+    }
+    .input-placeholder,
+    picker.placeholder {
+      color: #ccc;
+    }
+  }
+  #bind {
+    height: 100%;
+    #nav{
+        margin-top: @logo_margin_top;
+        margin-bottom:@logo_margin_bottom;
+        image{
+            width: @logo_width;
+            height: @logo_height;
+            float: left;
+            margin-left: 20rpx;
+            padding-bottom: 10rpx;
+        }
+
+        text{
+            border-left: 5rpx solid #de698c;
+            color: #de698c;
+            height: 42rpx;
+            font-weight: 700;
+            padding: 15rpx 0 0 15rpx;
+            margin-left: 20rpx;
+        }
+        
+    }
+    #title {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      height: 30%;
+      flex-wrap: wrap;
+      background: @base-color;
+      color: #fff;
+      font-size: 2rem;
+      text-align: center;
+      view {
+        margin-top: calc(~"15% - 1rem");
+      }
+      text {
+        display: block;
+        width: 100%;
+      }
+    }
+    button {
+      background: @base-color;
+      color: #fff;
+      border-color: @base-color;
+      margin: auto 20rpx;
+      position: absolute;
+      bottom: 2rem;
+      width: calc(~"100% - 40rpx");
+    }
+    form {
+      padding-top: 1rem;
+      display: block;
+      width: 100%;
+      height: calc(~"60% - 1rem");
+      background: #fefefe;
+    }
+  }
+</style>
