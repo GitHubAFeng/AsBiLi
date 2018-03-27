@@ -1,8 +1,8 @@
 
 import {env} from '../config/index'
-let prefix = "afeng.dev."
+let prefix = "";  //前缀
 if (env == "prod") {
-  prefix = "afeng.production."
+  prefix = ""
 }
 
 const Set = (key, value) => {

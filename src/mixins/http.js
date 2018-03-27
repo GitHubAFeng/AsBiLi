@@ -5,11 +5,11 @@ import db from '../util/db'
 
 export default class HttpMixin extends wepy.mixin{
     
-    GetWithBind(url, params = {}, showToast = true, handler = {}) {
+    GetWithBind(url, params = {}, showToast = false, handler = {}) {
         return this.requestWithBind('GET', url, params, showToast, handler)
     }
     
-    PostWithBind(url, params = {}, showToast = true, handler = {}) {
+    PostWithBind(url, params = {}, showToast = false, handler = {}) {
         return this.requestWithBind('POST', url, params, showToast, handler)
     }
     
@@ -38,11 +38,11 @@ export default class HttpMixin extends wepy.mixin{
     }
     
     //请求时带上token ， 而用户token在服务端响应设置在cookie ，后端获取在请求头token判断权限
-    request(method, url, params = {}, showToast = true, handler = {}) {
+    request(method, url, params = {}, showToast = false, handler = {}) {
         handler.url = domain + url
         handler.data = params
         handler.header = {
-            'Authorization': 'Bearer ' + db.Get('token')
+            'Authorization': db.Get('token')
         }
         handler.method = method
         if (method === 'POST') {
@@ -55,14 +55,9 @@ export default class HttpMixin extends wepy.mixin{
     
         return new Promise((resolve, reject) => {
             handler.success = res => {
-                wepy.hideLoading && wepy.hideLoading()
-                if (res.data.status === 0) {
-                    if (showToast) this.ShowToast(res.data.msg, 'success')
-                    resolve(res.data)
-                } else {
-                    if (showToast) this.ShowToast(res.data.msg || res.data || "网络错误")
-                    reject(res)
-                }
+                wepy.hideLoading && wepy.hideLoading();
+                if (showToast) this.ShowToast(res.data.msg, 'success')
+                resolve(res.data)
             }
             handler.fail = () => {
                 wepy.hideLoading && wepy.hideLoading()
@@ -74,12 +69,12 @@ export default class HttpMixin extends wepy.mixin{
     }
     
     // GET请求
-    GET(url, params = {}, showToast = true, handler = {}) {
+    GET(url, params = {}, showToast = false, handler = {}) {
         return this.request('GET', url, params, showToast, handler)
     }
     
     // POST请求
-    POST(url, params = {}, showToast = true, handler = {}) {
+    POST(url, params = {}, showToast = false, handler = {}) {
         return this.request('POST', url, params, showToast, handler)
     }
     

@@ -52,13 +52,21 @@
     };
     async Bind(params) {
       try {
+
         // const res = await this.POST('demo/app/wepy/_admin_user.php', params)
-        const res = await this.POST('user/login', params)
-        db.Set('verify', 1)
-        this.ShowToast('登录成功！', 'success')
-        wepy.navigateBack({
-          delta: 1
-        })
+        const res = await this.POST('user/login', params);
+
+        if(res.code === 1){
+          db.Set('token',res.result);
+          db.Set('verify', 1);
+          this.ShowToast('登录成功！', 'success');
+
+          wepy.navigateBack({delta: 1});
+        }else{
+          this.ShowToast('登录失败！');
+        }
+
+
       } catch (error) {
         console.log(error);
       }
