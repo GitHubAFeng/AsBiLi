@@ -1,53 +1,55 @@
 <style lang="less">
-  .mylist:odd {
-    color: red;
+.flex{
+  .wrap {
+    display: block;
+    padding: 2%;
+    background: #696969;
+
+    .item {
+      width: 47%;
+      height: 348rpx;
+      margin: 1.5%;
+      flex-grow: 0;
+    }
+    .item:nth-of-type(odd) {
+      background: #afdde3;
+    }
+    .item:nth-of-type(2n) {
+      background: #f397b2;
+    }
   }
-  .mylist:even {
-    color: green;
-  }
+
+}
+
 </style>
+
 <template>
-  <view class="list">
-  <view>
-    <button @tap="add" size="mini">添加列表</button>
-  </view>
-    <block wx:for-items="{{list}}" wx:for-index="index" wx:for-item="item" wx:key="id">
-      <view @tap="tap" class="mylist">
-        <text>{{item.id}}</text>: {{item.title}}
-      </view>
-    </block>
-  </view>
+  <wxc-flex class="wrap" cross="top" wrap="wrap" style="display: block;padding: 2%;background: #696969;">
+    <view class="item">1</view>
+    <view class="item">2</view>
+    <view class="item">3</view>
+    <view class="item">4</view>
+    <view class="item">5</view>
+  </wxc-flex>
 </template>
+
 <script>
   import wepy from 'wepy'
 
   export default class List extends wepy.component {
+
+    config = {
+      usingComponents: {
+        'wxc-flex': '../../packages/@minui/wxc-flex/dist/index',
+      }
+    }
+
     data = {
-      list: [
-        {
-          id: '0',
-          title: 'loading'
-        }
-      ]
-    }
-
-    events = {
-      'index-broadcast': (...args) => {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.name}`)
-      }
-    }
-
-    methods = {
-      tap () {
-        // this.num = this.num + 1
-        console.log(this.$name + ' tap')
-      },
-      add () {
-        let len = this.list.length
-        this.list.push({id: len + 1, title: 'title_' + len})
-      }
-    }
+      page: 1,
+      page_size: 20,
+      details: [],
+      height: 500,
+    };
 
     onLoad () {
     }

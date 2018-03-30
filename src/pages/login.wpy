@@ -1,14 +1,6 @@
 <template>
   <view id="bind">
-    <view id="nav">
-      <image mode="aspectFit" src="../styles/icon/logo-mobile.png" />
-      <text class="logoText">登录</text>
-    </view>
-    <view id="title">
-      <view>
-        <text>bilibili</text>
-      </view>
-    </view>
+    <header title="主页" desc="bilibili"></header>
     <form @submit="bind">
       <view class="input-group" hover-class="active">
         <text class="input-label iconfont ">&#xe61b; 账号</text>
@@ -32,12 +24,14 @@
   import HttpMixin from '../mixins/http';
   import ToastMixin from "../mixins/toast";
   import db from "../util/db";
-  export default class BindJwc extends wepy.page {
+  import header from '../components/myheader';
+  
+  export default class Login extends wepy.page {
     config = {
       navigationBarTitleText: ''
     };
     mixins = [ToastMixin,HttpMixin]
-    components = {}
+    components = {"header": header,}
     methods = {
       bind(e) {
         let params = e.detail.value;
@@ -77,14 +71,11 @@
 <style lang="less">
   @import url("../styles/less/config");
 
-    @logo_width:63rpx * 1.5;
-    @logo_height:28.8rpx * 1.5;
-    @logo_margin_top : 100rpx;
-    @logo_margin_bottom : 15rpx;
+  //增加这个属性 页面会比内容长
+  // page {
+    // height: 100%;
+  // }
 
-  page {
-    height: 100%;
-  }
   .help {
     font-size: 0.7rem;
     color: #888;
@@ -126,45 +117,7 @@
   }
   #bind {
     height: 100%;
-    #nav{
-        margin-top: @logo_margin_top;
-        margin-bottom:@logo_margin_bottom;
-        image{
-            width: @logo_width;
-            height: @logo_height;
-            float: left;
-            margin-left: 20rpx;
-            padding-bottom: 10rpx;
-        }
 
-        text{
-            border-left: 5rpx solid #de698c;
-            color: #de698c;
-            height: 42rpx;
-            font-weight: 700;
-            padding: 15rpx 0 0 15rpx;
-            margin-left: 20rpx;
-        }
-        
-    }
-    #title {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      height: 30%;
-      flex-wrap: wrap;
-      background: @base-color;
-      color: #fff;
-      font-size: 2rem;
-      text-align: center;
-      view {
-        margin-top: calc(~"15% - 1rem");
-      }
-      text {
-        display: block;
-        width: 100%;
-      }
-    }
     button {
       background: @base-color;
       color: #fff;

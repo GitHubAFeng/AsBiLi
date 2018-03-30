@@ -23,8 +23,9 @@ export default class extends wepy.app {
   config = {
     pages: [
       
+      'pages/index',
       'pages/login',
-      'pages/index'
+      
 
     ],
     window: {
@@ -33,8 +34,10 @@ export default class extends wepy.app {
       navigationBarTitleText: 'bilibili',
       navigationBarTextStyle: 'black',
       navigationStyle:'custom'
-    }
+    },
+
   }
+
 
 
   globalData = {

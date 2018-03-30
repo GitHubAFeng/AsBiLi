@@ -1,0 +1,72 @@
+<style lang="less">
+    @import url("../styles/less/config");
+    @logo_width:63rpx * 1.5;
+    @logo_height:28.8rpx * 1.5;
+    @logo_margin_top : 100rpx;
+    @logo_margin_bottom : 15rpx;
+
+    #nav{
+        margin-top: @logo_margin_top;
+        margin-bottom:@logo_margin_bottom;
+        image{
+            width: @logo_width;
+            height: @logo_height;
+            float: left;
+            margin-left: 20rpx;
+            padding-bottom: 10rpx;
+        }
+
+        text{
+            border-left: 5rpx solid #de698c;
+            color: #de698c;
+            height: 42rpx;
+            font-weight: 700;
+            padding: 15rpx 0 0 15rpx;
+            margin-left: 20rpx;
+        }
+        
+        #title {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            height: 30%;
+            flex-wrap: wrap;
+            background: @base-color;
+            color: #fff;
+            font-size: 2rem;
+            text-align: center;
+            view {
+                margin-top: calc(~"15% - 1rem");
+            }
+            text {
+                display: block;
+                width: 100%;
+            }
+        }
+    }
+
+</style>
+<template>
+    <view>
+        <view id="nav">
+        <image mode="aspectFit" src="../styles/icon/logo-mobile.png" />
+        <text class="logoText">登录</text>
+        </view>
+        <view id="title">
+        <view>
+            <slot>bilibili</slot>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Headers extends wepy.component {
+
+    props = {}
+    mixins = []
+    methods = {}
+    onLoad () {console.log('Header');}
+}
+</script>

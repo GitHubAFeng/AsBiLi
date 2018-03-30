@@ -1,5 +1,5 @@
 import wepy from 'wepy'
-import { domain } from '../config'
+import { domain } from '../config/default'
 import db from '../util/db'
 
 
