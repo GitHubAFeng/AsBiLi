@@ -23,7 +23,7 @@
   import wepy from 'wepy';
   import HttpMixin from '../mixins/http';
   import ToastMixin from "../mixins/toast";
-  import db from "../util/db";
+  import db from "../utils/db";
   import header from '../components/myheader';
   
   export default class Login extends wepy.page {

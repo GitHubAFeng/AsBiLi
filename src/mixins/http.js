@@ -1,6 +1,6 @@
 import wepy from 'wepy'
 import { domain } from '../config/default'
-import db from '../util/db'
+import db from '../utils/db'
 
 
 export default class HttpMixin extends wepy.mixin{

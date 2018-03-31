@@ -2,16 +2,16 @@
 <template>
   <scroll-view scroll-y="true" class="swiper-item-box">
     <view class="shop_item">
-      <navigator class="list" wx:for="{{list}}" wx:key="item" url="">
+      <navigator class="list" wx:for="{{list}}" wx:key="item" url="https://m.bilibili.com/video/av{{item.aid}}.html">
         <view class="image_box">
           <image wx:if="{{item.pic}}" src="{{item.pic}}"></image>
         </view>
         <view class="goods">
-          <view class="product_name" wx:if="{{showTitle}}">{{item.title}}</view>
+          <view class="av_name" wx:if="{{showTitle}}">{{item.title}}</view>
           <view class="product_info">
-            <view class="price">￥{{item.tname}}</view>
+            <!-- <view class="tname">{{item.tname}}</view>
             <view class="cost_price">￥{{item.ctime}}</view>
-            <view class="sale_num">销量{{item.aid}}件</view>
+            <view class="sale_num">销量{{item.aid}}件</view> -->
           </view>
         </view>
       </navigator>
@@ -70,18 +70,18 @@ export default class AvList extends wepy.component {
       height: 345rpx;
     }
   }
-  .product_name {
+  .av_name {
     color: #1a1a1a;
-    font-size: 28rpx;
+    font-size: 20rpx;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     word-break: break-all;
   }
-  .price {
+  .tname {
     color: #de0000;
-    font-size: 35rpx;
+    font-size: 20rpx;
     font-weight: 600;
   }
   .cost_price {

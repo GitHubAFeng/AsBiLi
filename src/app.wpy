@@ -45,8 +45,10 @@ export default class extends wepy.app {
   }
 
   constructor () {
-    super()
-    this.use('requestfix')
+    super();
+     // 开启promise 后才能正常使用 wepy.request() , 默认没有开启，文档也没说明，大坑！
+    this.use('promisify');    
+    this.use('requestfix');
   }
 
   onLaunch() {

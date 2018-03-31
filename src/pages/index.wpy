@@ -23,7 +23,10 @@
     <Swiper :list.sync="swipers" height="280"></Swiper>
 
     <AvList :list.sync="lists"></AvList>
-
+    <!--页面底部加载更多时的动画-->
+    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+    <!--暂无数据时显示-->
+    <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
   </view>
 </template>
 
@@ -32,6 +35,8 @@ import wepy from 'wepy';
 import header from '../components/myheader';
 import Swiper from '../components/swiper_img';
 import AvList from '../components/av_list';
+import bottomLoadMore from '../components/bottom_load_more';
+import placeholder from '../components/Placeholder';
 import Api from '../apis/api';
 import tip from '../utils/tip';
 
@@ -41,7 +46,7 @@ export default class Index extends wepy.page {
     usingComponents: {
       'wxc-tab': '../../packages/@minui/wxc-tab/dist/index',
       'wxc-tab-panel': '../../packages/@minui/wxc-tab/dist/panel',
-      'wxc-tab-label': '../../packages/@minui/wxc-tab/dist/label',
+      'wxc-tab-label': '../../packages/@minui/wxc-tab/dist/label'
     }
   };
   data = {
@@ -53,14 +58,18 @@ export default class Index extends wepy.page {
       { title: '音乐', content: '4' },
       { title: '舞蹈', content: '5' }
     ],
-    swipers: [
-      // 占位图，防止请求错误无图显示
-      { image: '../styles/images/def.jpg', url: '/pages/main/search' },
-      { image: '../styles/images/def.jpg', url: '/pages/main/search' }
-    ],
-    lists: [
-      { pic: 'http://i2.hdslb.com/bfs/archive/8cd205235b5112efe2c6d09af59a77be4ffe0955.jpg', title: '111' , tname: '111', ctime: '111', aid: '111'},
-    ]
+    swipers: [],
+    lists: [],
+    //当前页面
+    currentPage: 1,
+    //总页数
+    page_total: 0,
+    //是否没有更多数据
+    is_empty: false,
+    //视频类型
+    av_type: 'douga',
+    //是否显示 底部loading
+    showLoading: true
   };
   methods = {
     onClick: function(e) {
@@ -71,22 +80,86 @@ export default class Index extends wepy.page {
   };
 
   components = {
-    header,Swiper,AvList,
+    header,
+    Swiper,
+    AvList,
+    bottomLoadMore,
+    placeholder
   };
 
-
-  async getList() {
+  //取轮播数据（广告）
+  async getAd() {
     let that = this;
-    const json = await Api.getIndexList();
-    console.log(json.msg);
-    that.lists = [...that.lists, ...json.result];
+    const json = await Api.getIndexList({
+      query: {
+        page: 1,
+        size: 4,
+        type: 'ad'
+      }
+    });
+
+    console.log(json.result);
+    if (json.code == 0) {
+      const mun = Object.keys(json.result);
+      if (mun.length == 0) {
+        //暂无数据
+      } else {
+        that.swipers = json.result;
+      }
+    } else {
+      tip.error(json.msg);
+    }
+
+    that.$apply();
+  }
+
+  //取列表数据
+  async getList(currentPage, size) {
+    let that = this;
+    that.showLoading = true;
+
+    const json = await Api.getIndexList({
+      query: {
+        page: currentPage || 1,
+        size: size || 10,
+        type: this.av_type
+      }
+    });
+    // console.log(json);
+    if (json.code == 0) {
+      const mun = Object.keys(json.result);
+      if (mun.length == 0) {
+        //暂无数据
+        that.is_empty = true;
+      } else {
+        that.lists = [...that.lists, ...json.result];
+      }
+    } else {
+      tip.error(json.msg);
+    }
+
     that.showLoading = false;
     that.$apply();
   }
 
   onLoad(option) {
     console.log('onLoad');
+    this.av_type = option.type || 'douga';
+    this.getAd();
+    //当前页面
+    this.currentPage = 1;
     this.getList();
+  }
+
+  //加载更多
+  onReachBottom() {
+    let that = this;
+    //是否显示 底部loading
+    this.showLoading = true;
+    this.is_empty = false;
+    console.log(that.page_total + '===' + that.currentPage);
+    that.currentPage++;
+    that.getList(that.currentPage);
   }
 }
 </script>

@@ -1,5 +1,5 @@
 
-import {env} from '../config/index'
+import {env} from '../config/default'
 let prefix = "";  //前缀
 if (env == "prod") {
   prefix = ""

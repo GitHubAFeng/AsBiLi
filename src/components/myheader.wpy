@@ -50,7 +50,7 @@
 <template>
     <view>
         <view id="nav">
-          <image mode="aspectFit" src="../styles/icon/logo-mobile.png" />
+          <image mode="aspectFit" src="{{logo}}" />
           <text class="logoText">{{title}}</text>
         </view>
         <view id="title">
@@ -67,6 +67,10 @@
     props = {
     title: String,
     desc: String,
+    logo: {
+        type: String,
+        default: 'http://127.0.0.1:7001/public/icons/logo-mobile.png'
+      },
     };
   }
 </script>

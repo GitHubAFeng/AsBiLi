@@ -5,11 +5,11 @@
    indicator-active-color="{{indicatorActiveColor}}">
     <block wx:for="{{list}}" wx:key="index">
       <swiper-item>
-        <navigator wx:if="{{item.url}}" url="{{item.url}}">
-          <image src="{{item.image}}" style="height:{{style_height}}" class="swiper-image" mode="widthFix"/>
+        <navigator wx:if="{{item.aid}}" url="https://m.bilibili.com/video/av{{item.aid}}.html">
+          <image src="{{item.pic}}" style="height:{{style_height}}" class="swiper-image" mode="widthFix"/>
         </navigator>
         <view wx:else style="height:{{style_height}}">
-          <image src="{{item.image}}" style="height:{{style_height}}" class="swiper-image" mode="aspectFit"/>
+          <image src="{{item.pic}}" style="height:{{style_height}}" class="swiper-image" mode="aspectFit"/>
         </view>
       </swiper-item>
     </block>
