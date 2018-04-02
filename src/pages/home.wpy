@@ -1,0 +1,264 @@
+<template>
+  <scroll-view class="swiper-item-box" scroll-y="true" upper-threshold="50" lower-threshold="100" bindscrolltolower="scrolltolower">
+    <swiper class="swiper" style="height:{{style_height}}" autoplay="{{autoplay}}"
+    indicator-dots="{{indicatorDots}}" 
+    indicator-color="{{indicatorColor}}"
+    indicator-active-color="{{indicatorActiveColor}}">
+        <block wx:for="{{swipers}}" wx:key="index">
+        <swiper-item>
+            <navigator wx:if="{{item.aid}}" url="https://m.bilibili.com/video/av{{item.aid}}.html">
+            <image src="{{item.pic}}" style="height:{{style_height}}" class="swiper-image" mode="widthFix"/>
+            </navigator>
+            <view wx:else style="height:{{style_height}}">
+            <image src="{{item.pic}}" style="height:{{style_height}}" class="swiper-image" mode="aspectFit"/>
+            </view>
+        </swiper-item>
+        </block>
+    </swiper>
+
+    <view class="shop_item">
+      <navigator class="list" wx:for="{{lists}}" wx:key="item" url="https://m.bilibili.com/video/av{{item.aid}}.html">
+        <view class="image_box">
+          <image wx:if="{{item.pic}}" src="{{item.pic}}"></image>
+        </view>
+        <view class="goods">
+          <view class="av_name" wx:if="{{showTitle}}">{{item.title}}</view>
+          <view class="product_info">
+
+          </view>
+        </view>
+      </navigator>
+    </view>
+  </scroll-view>
+
+    <!--页面底部加载更多时的动画-->
+    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
+    <!--暂无数据时显示-->
+    <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
+
+</template>
+
+<script>
+import wepy from 'wepy';
+import Swiper from '../components/swiper_img';
+import AvList from '../components/av_list';
+import bottomLoadMore from '../components/bottom_load_more';
+import placeholder from '../components/Placeholder';
+import Api from '../apis/api';
+import tip from '../utils/tip';
+import base from '../mixins/base.js';
+
+export default class Home extends wepy.component {
+  config = {
+    navigationBarTitleText: '',
+    usingComponents: {}
+  };
+  data = {
+    swipers: [],
+    lists: [],
+    //当前页面
+    currentPage: 1,
+    //总页数
+    page_total: 0,
+    //是否没有更多数据
+    is_empty: false,
+    //视频类型
+    av_type: 'douga',
+    //是否显示 底部loading
+    showLoading: true,
+
+    dots: true,
+    height: 280,
+    autoplay: true,
+    indicatorColor: 'rgba(255, 255, 255, 0.6)',
+    indicatorActiveColor: 'rgba(255, 255, 255, 1)'
+  };
+  methods = {
+    onClick: function(e) {
+      console.log(
+        `ComponentId:${e.detail.componentId},you selected:${e.detail.key}`
+      );
+    },
+
+    scrolltolower: function(e) {
+      console.log('home-scrolltolower');
+      let that = this;
+      //是否显示 底部loading
+      this.showLoading = true;
+      this.is_empty = false;
+      that.currentPage++;
+      that.getList(that.currentPage);
+    }
+  };
+
+  mixins = [base];
+
+  components = {
+    Swiper,
+    AvList,
+    bottomLoadMore,
+    placeholder
+  };
+
+  computed = {
+    indicatorDots() {
+      return Boolean(this.swipers.length > 1 && this.dots);
+    },
+    style_height() {
+      const h = this.height;
+      return this.isNumber(+h)
+        ? `${h}rpx`
+        : this.isMatchHeight(h) ? h : '240rpx';
+    }
+  };
+
+  isMatchHeight(str) {
+    return this.isString(str) ? /\d+(r?px|em)$/.test(str) : false;
+  }
+
+  //取轮播数据（广告）
+  async getAd() {
+    let that = this;
+    const json = await Api.getIndexList({
+      query: {
+        page: 1,
+        size: 4,
+        type: 'ad'
+      }
+    });
+
+    // console.log(json.result);
+    if (json.code == 0) {
+      const mun = Object.keys(json.result);
+      if (mun.length == 0) {
+        //暂无数据
+      } else {
+        that.swipers = json.result;
+      }
+    } else {
+      tip.error(json.msg);
+    }
+
+    that.$apply();
+  }
+
+  //取列表数据
+  async getList(currentPage, size) {
+    let that = this;
+    that.showLoading = true;
+
+    const json = await Api.getIndexList({
+      query: {
+        page: currentPage || 1,
+        size: size || 10,
+        type: this.av_type
+      }
+    });
+    // console.log(json);
+    if (json.code == 0) {
+      const mun = Object.keys(json.result);
+      if (mun.length == 0) {
+        //暂无数据
+        that.is_empty = true;
+      } else {
+        that.lists = [...that.lists, ...json.result];
+      }
+    } else {
+      tip.error(json.msg);
+    }
+
+    that.showLoading = false;
+    that.$apply();
+  }
+
+  onLoad(option) {
+    console.log('home-onLoad');
+
+    this.av_type = 'douga';
+    this.getAd();
+    //当前页面
+    this.currentPage = 1;
+    this.getList();
+  }
+
+  //加载更多
+  scrolltolower() {
+    let that = this;
+    //是否显示 底部loading
+    this.showLoading = true;
+    this.is_empty = false;
+    console.log('hemo-加载更多');
+    that.currentPage++;
+    that.getList(that.currentPage);
+  }
+
+  // onReachBottom() {console.log('onReachBottom');}
+}
+</script>
+
+<style lang="less">
+.swiper-item-box {
+  height: 100%;
+}
+.shop_item {
+  padding: 0rpx 15rpx;
+  background: #f7f7f7;
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 30rpx;
+}
+
+.list:nth-child(odd) {
+  margin-right: 10rpx;
+}
+
+.list {
+  background: #fff;
+  width: 355rpx;
+  margin-top: 15rpx;
+  .image_box {
+    image {
+      width: 100%;
+      height: 345rpx;
+    }
+  }
+  .av_name {
+    color: #1a1a1a;
+    font-size: 20rpx;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+  }
+  .tname {
+    color: #de0000;
+    font-size: 20rpx;
+    font-weight: 600;
+  }
+  .cost_price {
+    color: #666666;
+    font-size: 24rpx;
+    text-decoration: line-through;
+    font-weight: 600;
+  }
+  .sale_num {
+    color: #666666;
+    font-size: 22rpx;
+  }
+  .goods {
+    padding: 15rpx 12rpx;
+  }
+  .product_info {
+    padding-top: 20rpx;
+    display: flex;
+    align-items: flex-end;
+  }
+  .cost_price {
+    padding-left: 20rpx;
+  }
+  .sale_num {
+    padding-left: 20rpx;
+  }
+}
+</style>

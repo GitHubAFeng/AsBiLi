@@ -1,6 +1,6 @@
 <!--商品列表模块-->
 <template>
-  <scroll-view scroll-y="true" class="swiper-item-box">
+  <scroll-view scroll-y="false" class="swiper-item-box">
     <view class="shop_item">
       <navigator class="list" wx:for="{{list}}" wx:key="item" url="https://m.bilibili.com/video/av{{item.aid}}.html">
         <view class="image_box">
@@ -48,6 +48,9 @@ export default class AvList extends wepy.component {
 
 </script>
 <style lang="less">
+.swiper-item-box{
+  height: 100%;
+}
 .shop_item {
   padding: 0rpx 15rpx;
   background: #f7f7f7;

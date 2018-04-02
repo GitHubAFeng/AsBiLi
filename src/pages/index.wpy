@@ -20,25 +20,30 @@
         </wxc-tab-panel>
     </wxc-tab>
 
-    <Swiper :list.sync="swipers" height="280"></Swiper>
 
-    <AvList :list.sync="lists"></AvList>
-    <!--页面底部加载更多时的动画-->
-    <bottomLoadMore :show.sync="showLoading" message="正在加载"></bottomLoadMore>
-    <!--暂无数据时显示-->
-    <placeholder :show.sync="is_empty" message="暂无发现数据"></placeholder>
+<swiper current="{{currentTab}}" duration="300" style="height:{{winHeight - 51}}px" bindchange="bindChange" >
+    <swiper-item style="height: 100%;">
+      <view style="height: 100%;"> 
+        <Home></Home>
+      </view>  
+    </swiper-item>
+
+    <swiper-item style="height: 100%;">
+      <view style="height: 100%;"> 
+      <image src="http://127.0.0.1:7001/public/images/0006b65fce3a9f90e247ec8c8805f0153ff8349b.jpg" class="slide-image" width="355" height="150"/>
+       </view>  
+    </swiper-item>
+
+</swiper>
+
+
   </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import header from '../components/myheader';
-import Swiper from '../components/swiper_img';
-import AvList from '../components/av_list';
-import bottomLoadMore from '../components/bottom_load_more';
-import placeholder from '../components/Placeholder';
-import Api from '../apis/api';
-import tip from '../utils/tip';
+import Home from './home';
 
 export default class Index extends wepy.page {
   config = {
@@ -58,109 +63,31 @@ export default class Index extends wepy.page {
       { title: '音乐', content: '4' },
       { title: '舞蹈', content: '5' }
     ],
-    swipers: [],
-    lists: [],
-    //当前页面
-    currentPage: 1,
-    //总页数
-    page_total: 0,
-    //是否没有更多数据
-    is_empty: false,
-    //视频类型
-    av_type: 'douga',
-    //是否显示 底部loading
-    showLoading: true
+    winHeight: 0,
+    winWidth: 0,
+    currentTab: 0
   };
   methods = {
-    onClick: function(e) {
-      console.log(
-        `ComponentId:${e.detail.componentId},you selected:${e.detail.key}`
-      );
+    bindChange: function(e) {
+      this.currentTab = e.detail.current;
     }
   };
 
   components = {
     header,
-    Swiper,
-    AvList,
-    bottomLoadMore,
-    placeholder
+    Home
   };
-
-  //取轮播数据（广告）
-  async getAd() {
-    let that = this;
-    const json = await Api.getIndexList({
-      query: {
-        page: 1,
-        size: 4,
-        type: 'ad'
-      }
-    });
-
-    console.log(json.result);
-    if (json.code == 0) {
-      const mun = Object.keys(json.result);
-      if (mun.length == 0) {
-        //暂无数据
-      } else {
-        that.swipers = json.result;
-      }
-    } else {
-      tip.error(json.msg);
-    }
-
-    that.$apply();
-  }
-
-  //取列表数据
-  async getList(currentPage, size) {
-    let that = this;
-    that.showLoading = true;
-
-    const json = await Api.getIndexList({
-      query: {
-        page: currentPage || 1,
-        size: size || 10,
-        type: this.av_type
-      }
-    });
-    // console.log(json);
-    if (json.code == 0) {
-      const mun = Object.keys(json.result);
-      if (mun.length == 0) {
-        //暂无数据
-        that.is_empty = true;
-      } else {
-        that.lists = [...that.lists, ...json.result];
-      }
-    } else {
-      tip.error(json.msg);
-    }
-
-    that.showLoading = false;
-    that.$apply();
-  }
 
   onLoad(option) {
     console.log('onLoad');
-    this.av_type = option.type || 'douga';
-    this.getAd();
-    //当前页面
-    this.currentPage = 1;
-    this.getList();
+    let systemInfo = wepy.getSystemInfoSync();
+    this.winWidth = systemInfo.windowWidth;
+    this.winHeight = systemInfo.windowHeight;
+    console.log(this.winWidth + '/' + this.winHeight);
   }
 
   //加载更多
-  onReachBottom() {
-    let that = this;
-    //是否显示 底部loading
-    this.showLoading = true;
-    this.is_empty = false;
-    console.log(that.page_total + '===' + that.currentPage);
-    that.currentPage++;
-    that.getList(that.currentPage);
-  }
+  // onReachBottom() {console.log('index-bindDownLoad');}
 }
 </script>
 
