@@ -1,5 +1,5 @@
 <template>
-  <scroll-view class="swiper-item-box" scroll-y="true" upper-threshold="50" lower-threshold="100" bindscrolltolower="scrolltolower">
+  <scroll-view enable-back-to-top="true" class="swiper-item-box" scroll-y="true" upper-threshold="50" lower-threshold="100" bindscrolltolower="scrolltolower">
     <swiper class="swiper" style="height:{{style_height}}" autoplay="{{autoplay}}"
     indicator-dots="{{indicatorDots}}" 
     indicator-color="{{indicatorColor}}"
